@@ -51,7 +51,7 @@ public class SahilController : MonoBehaviour
         }
     }
 
-    // IEnumerator is basically an interface; it helps us enable the countown timer outside the update loop
+    // IEnumerator is basically an interface; it helps us enable the countown timer outside the update loop; think of them like a second update loop running
     IEnumerator PowerupCountdownRoutine()
     {
         // yield basically allows this f(x)/statement to run outside/independent of the update f(x)
