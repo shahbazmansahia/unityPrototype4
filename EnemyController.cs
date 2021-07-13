@@ -22,5 +22,10 @@ public class EnemyController : MonoBehaviour
         Vector3 lookDirection = (sahil.transform.position - transform.position).normalized;
         
         enemyRb.AddForce( lookDirection * velocity);
+
+        if (transform.position.y < -10.0f)
+        {
+            Destroy(gameObject);
+        }
     }
 }

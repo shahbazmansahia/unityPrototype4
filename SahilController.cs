@@ -17,6 +17,7 @@ public class SahilController : MonoBehaviour
         sahilRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
         powerupIndicator.SetActive(false);
+        
     }
 
     // Update is called once per frame
@@ -26,6 +27,8 @@ public class SahilController : MonoBehaviour
         sahilRb.AddForce(focalPoint.transform.forward * velocity * forwardInput);
         powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);
     }
+
+    
 
     private void OnTriggerEnter(Collider other)
     {
