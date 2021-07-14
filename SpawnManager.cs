@@ -61,9 +61,10 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnEnemyWave(int value)
     {
-        int enemyType = Random.Range(0, enemyPrefabs.Length);
+        
         for (int i = 0; i < value; i++)
         {
+            int enemyType = Random.Range(0, enemyPrefabs.Length);
             Instantiate(enemyPrefabs[enemyType], GenerateSpawnPosition(), enemyPrefabs[enemyType].transform.rotation);
         }
     }
@@ -73,10 +74,14 @@ public class SpawnManager : MonoBehaviour
         MissileController missileControllerScript;
         for (int i = 0; i < enemyCount; i++)
         {
-            missileControllerScript = missile.GetComponent<MissileController>();
-            missileControllerScript.enemyPos = activeEnemies[i].gameObject.transform.position;
-            Instantiate(missile, (sahilGameObj.transform.position + sahilGameObj.transform.localScale), sahilGameObj.transform.rotation);
-            
+            if (enemyCount != 0)
+            {
+                missileControllerScript = missile.GetComponent<MissileController>();
+                missileControllerScript.enemyPos = activeEnemies[i].gameObject.transform.position;
+                Instantiate(missile, (sahilGameObj.transform.position + sahilGameObj.transform.localScale), sahilGameObj.transform.rotation);
+
+            }
+
         }
     }
     public Vector3 GenerateSpawnPosition()
