@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameObject enemyPrefab;
+    public GameObject[] enemyPrefabs;
     public GameObject powerupPrefab;
 
     // Values to give the spawnRange a little bit of buffer to avoid objects spawning right next to the player
@@ -38,9 +38,10 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnEnemyWave(int value)
     {
+        int enemyType = Random.Range(0, enemyPrefabs.Length);
         for (int i = 0; i < value; i++)
         {
-            Instantiate(enemyPrefab, GenerateSpawnPosition(), enemyPrefab.transform.rotation);
+            Instantiate(enemyPrefabs[enemyType], GenerateSpawnPosition(), enemyPrefabs[enemyType].transform.rotation);
         }
     }
     public Vector3 GenerateSpawnPosition()
