@@ -7,7 +7,7 @@ public class EnemyController : MonoBehaviour
     private float velocity = 1.0f;
     private Rigidbody enemyRb;
     private GameObject sahil;
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,4 +28,6 @@ public class EnemyController : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    
 }

@@ -5,7 +5,9 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     public GameObject[] enemyPrefabs;
-    public GameObject powerupPrefab;
+    public GameObject[] powerupPrefabs;
+    public GameObject missile;
+    private GameObject[] activeEnemies;
 
     // Values to give the spawnRange a little bit of buffer to avoid objects spawning right next to the player
     //private float enemyRange = 7.0f;
@@ -15,25 +17,46 @@ public class SpawnManager : MonoBehaviour
     private int waveNum;
     private int enemyCount;
 
+    private float missileStrength;
+
+    private GameObject sahilGameObj;
+    private SahilController sahilControllerScript;
+    
+    
     // Start is called before the first frame update
     void Start()
     {
+        sahilGameObj = GameObject.Find("Sahil");
+        sahilControllerScript = sahilGameObj.GetComponent<SahilController>();
         waveNum = 1;
         SpawnEnemyWave(waveNum);
-        Instantiate(powerupPrefab, GenerateSpawnPosition(), powerupPrefab.transform.rotation);
+        SpawnPowerup();
     }
 
     // Update is called once per frame
     void Update()
     {
-        enemyCount = FindObjectsOfType<EnemyController>().Length;
+        
+        activeEnemies = GameObject.FindGameObjectsWithTag("Enemy");
+        enemyCount = activeEnemies.Length;
         //Debug.Log("Enemies Left: " + enemyCount);
         if (enemyCount < 1)
         {
             waveNum++;
             SpawnEnemyWave(waveNum);
-            Instantiate(powerupPrefab, GenerateSpawnPosition(), powerupPrefab.transform.rotation);
+            SpawnPowerup();
         }
+        // TO DO: ADD A TIMER CONDITION TO AVOID MISSILE SPAM
+        if (sahilControllerScript.missilesEnabled && (!sahilControllerScript.isGameOver) && (Input.GetKeyDown(KeyCode.LeftControl)))
+        {
+            SpawnMissiles();
+        }
+    }
+
+    void SpawnPowerup()
+    {
+        int powerup2Spawn = Random.Range(0, powerupPrefabs.Length);
+        Instantiate(powerupPrefabs[powerup2Spawn], GenerateSpawnPosition(), powerupPrefabs[powerup2Spawn].transform.rotation);
     }
 
     void SpawnEnemyWave(int value)
@@ -42,6 +65,18 @@ public class SpawnManager : MonoBehaviour
         for (int i = 0; i < value; i++)
         {
             Instantiate(enemyPrefabs[enemyType], GenerateSpawnPosition(), enemyPrefabs[enemyType].transform.rotation);
+        }
+    }
+
+    void SpawnMissiles()
+    {
+        MissileController missileControllerScript;
+        for (int i = 0; i < enemyCount; i++)
+        {
+            missileControllerScript = missile.GetComponent<MissileController>();
+            missileControllerScript.enemyPos = activeEnemies[i].gameObject.transform.position;
+            Instantiate(missile, (sahilGameObj.transform.position + sahilGameObj.transform.localScale), sahilGameObj.transform.rotation);
+            
         }
     }
     public Vector3 GenerateSpawnPosition()
