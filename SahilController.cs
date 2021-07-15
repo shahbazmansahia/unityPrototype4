@@ -13,6 +13,13 @@ public class SahilController : MonoBehaviour
     private float powerupStrength = 5.0f;
     public GameObject powerupIndicator;
 
+    //Added as a part of the alternate approach to implementing powerup/missile system
+    public PowerUpType currPowerUp = PowerUpType.None;
+
+    public GameObject missilePrefab;
+    private GameObject spawnedMissile;
+    private Coroutine powerUpCountdown;
+
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +37,11 @@ public class SahilController : MonoBehaviour
         sahilRb.AddForce(focalPoint.transform.forward * velocity * forwardInput);
         powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);
 
+        // The code below has been implemented as a part of the alt. approach of homing missile systems
+        if ((currPowerUp == PowerUpType.Missiles) && (Input.GetKeyDown(KeyCode.LeftControl)))
+        {
+            AltSpawnMissiles();
+        }
     }
 
     
@@ -39,31 +51,63 @@ public class SahilController : MonoBehaviour
         if (other.CompareTag("Powerup"))
         {
             hasPowerup = true;
+            currPowerUp = other.gameObject.GetComponent<PowerUp>().powerUpType;
+            Debug.Log("Powerup Type: " + currPowerUp.ToString());
             Destroy(other.gameObject);
-            StartCoroutine(PowerupCountdownRoutine());
+            //StartCoroutine(PowerupCountdownRoutine());      // Commenting it out for alternate approach
             powerupIndicator.SetActive(true);
-        }
 
+            // Alt. approach part starts here
+            if (powerUpCountdown != null)
+            {
+                StopCoroutine(AltPowerupCountdownRoutine());
+            }
+            powerUpCountdown = StartCoroutine(AltPowerupCountdownRoutine());
+
+            // Alt. approach ends here
+        }
+        /** Code commented to immplement an test Alt. approach to missile spawns
+         * 
         if (other.CompareTag("Powerup2"))
         {
             hasPowerup = true;
             missilesEnabled = true;
+            
             Destroy(other.gameObject);
             StartCoroutine(Powerup2CountdownRoutine());
             powerupIndicator.SetActive(true);
         }
+        */
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Enemy") && hasPowerup)
+        //if (collision.gameObject.CompareTag("Enemy") && hasPowerup)       // Older implementation of if statement; alternate approach applied below this
+        if (collision.gameObject.CompareTag("Enemy") && (currPowerUp == PowerUpType.Pushback))
         {
             Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
             Vector3 awayFromSahil = (collision.gameObject.transform.position - transform.position);
-
-            Debug.Log("Collided with " + collision.gameObject.name + " with powerup set to " + hasPowerup);
-
+            // Older Debug.Log
+            //Debug.Log("Collided with " + collision.gameObject.name + " with powerup set to " + hasPowerup);
+            
+            // Alt. approach Debug.Log
+            Debug.Log("Collided with " + collision.gameObject.name + " with powerup set to " + currPowerUp.ToString());
             enemyRb.AddForce(awayFromSahil * powerupStrength, ForceMode.Impulse);
+        }
+    }
+
+    /** This method replaces the functionality of the SpawnMissiles f(x) as a part of the alt. approach
+     * 
+     */
+    void AltSpawnMissiles()
+    {
+        Debug.Log("AltSpawnMissiles() triggered!");
+        GameObject[] activeEnemies = GameObject.FindGameObjectsWithTag("Enemy");
+        for (int i = 0; i < activeEnemies.Length; i++)
+        {
+            spawnedMissile = Instantiate(missilePrefab, transform.position + Vector3.up, Quaternion.identity);
+            spawnedMissile.GetComponent<AltMissileController>().Fire(activeEnemies[i].transform);
+            Debug.Log("Missile Spawned!");
         }
     }
 
@@ -85,5 +129,15 @@ public class SahilController : MonoBehaviour
         missilesEnabled = false;
         powerupIndicator.SetActive(false);
         Debug.Log("Powerup2 deactivated");
+    }
+
+    // Coroutine developed as a part of alt. approach
+    IEnumerator AltPowerupCountdownRoutine()
+    {
+        Debug.Log("Alt. Routine Started!");
+        yield return new WaitForSeconds(7);
+        hasPowerup = false;
+        currPowerUp = PowerUpType.None;
+        powerupIndicator.gameObject.SetActive(false);
     }
 }

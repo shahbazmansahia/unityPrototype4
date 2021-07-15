@@ -46,11 +46,14 @@ public class SpawnManager : MonoBehaviour
             SpawnEnemyWave(waveNum);
             SpawnPowerup();
         }
+        /** Removing this segment to implement the alt. approach
+         * 
         // TO DO: ADD A TIMER CONDITION TO AVOID MISSILE SPAM
         if (sahilControllerScript.missilesEnabled && (!sahilControllerScript.isGameOver) && (Input.GetKeyDown(KeyCode.LeftControl)))
         {
-            SpawnMissiles();
+            AltSpawnMissiles();
         }
+        */
     }
 
     void SpawnPowerup()
@@ -68,7 +71,8 @@ public class SpawnManager : MonoBehaviour
             Instantiate(enemyPrefabs[enemyType], GenerateSpawnPosition(), enemyPrefabs[enemyType].transform.rotation);
         }
     }
-
+    /** Removing this f(x) to try the alt. approach
+     * 
     void SpawnMissiles()
     {
         MissileController missileControllerScript;
@@ -84,6 +88,7 @@ public class SpawnManager : MonoBehaviour
 
         }
     }
+    */
     public Vector3 GenerateSpawnPosition()
     {
         float spawnPosX = Random.Range(-spawnRange, spawnRange);
