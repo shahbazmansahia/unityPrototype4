@@ -8,7 +8,9 @@ public class SpawnManager : MonoBehaviour
     public GameObject[] powerupPrefabs;
     public GameObject missile;
     private GameObject[] activeEnemies;
-
+    public GameObject enemyBoss;
+    //public GameObject[] minionPrefabs;     // redundant and not needed as we can just use the enemyPrefab[]
+    private int bossRound = 5;
     // Values to give the spawnRange a little bit of buffer to avoid objects spawning right next to the player
     //private float enemyRange = 7.0f;
     //private float sahilRange = 2.0f;
@@ -69,6 +71,31 @@ public class SpawnManager : MonoBehaviour
         {
             int enemyType = Random.Range(0, enemyPrefabs.Length);
             Instantiate(enemyPrefabs[enemyType], GenerateSpawnPosition(), enemyPrefabs[enemyType].transform.rotation);
+        }
+
+        if ((waveNum % bossRound) == 0)
+        {
+            for (int j = 0; j < (waveNum / bossRound); j++)
+            {
+                SpawnBossWave();
+            }
+        }
+    }
+
+    void SpawnBossWave()
+    {
+        int minionsToSpawn = waveNum / 4;
+
+        var boss = Instantiate(enemyBoss, GenerateSpawnPosition(), enemyBoss.transform.rotation);
+    }
+
+    public void SpawnMinions (int num)
+    {
+        for (int i = 0; i < num; i++)
+        {
+            int enemyType = Random.Range(0, enemyPrefabs.Length);
+            Instantiate(enemyPrefabs[enemyType], GenerateSpawnPosition(), enemyPrefabs[enemyType].transform.rotation);
+
         }
     }
     /** Removing this f(x) to try the alt. approach
