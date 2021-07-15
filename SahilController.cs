@@ -20,6 +20,14 @@ public class SahilController : MonoBehaviour
     private GameObject spawnedMissile;
     private Coroutine powerUpCountdown;
 
+    //Adding the variables below to implement the 'smash' powerup
+    public float hangTime = 1.0f;
+    public float waveSpeed = 5.0f;
+    public float explosionForce = 20.0f;
+    public float explosionRadius =  5.0f;
+
+    bool isSmashEnabled = false;
+    float floorY;
 
     // Start is called before the first frame update
     void Start()
@@ -41,6 +49,13 @@ public class SahilController : MonoBehaviour
         if ((currPowerUp == PowerUpType.Missiles) && (Input.GetKeyDown(KeyCode.LeftControl)))
         {
             AltSpawnMissiles();
+        }
+
+        if ((currPowerUp == PowerUpType.Smash) && (Input.GetKeyDown(KeyCode.Space) && (!isSmashEnabled)))
+        {
+            isSmashEnabled = true;
+            StartCoroutine(Smash());
+            Debug.Log("SMASH!");
         }
     }
 
@@ -111,6 +126,8 @@ public class SahilController : MonoBehaviour
         }
     }
 
+    /** This segment has been rednered defunct due to the enum Powerup approach applied as a part of the alt. approach to implementing homing missiles
+     * 
     // IEnumerator is basically an interface; it helps us enable the countown timer outside the update loop; think of them like a second update loop running
     IEnumerator PowerupCountdownRoutine()
     {
@@ -120,7 +137,10 @@ public class SahilController : MonoBehaviour
         powerupIndicator.SetActive(false);
         Debug.Log("Powerup deactivated");
     }
+    */
 
+    /** a function now defunct due to the alt. approach applied to homing missiles
+     * 
     IEnumerator Powerup2CountdownRoutine()
     {
         // yield basically allows this f(x)/statement to run outside/independent of the update f(x)
@@ -130,8 +150,9 @@ public class SahilController : MonoBehaviour
         powerupIndicator.SetActive(false);
         Debug.Log("Powerup2 deactivated");
     }
+    */
 
-    // Coroutine developed as a part of alt. approach
+    // Coroutine developed as a part of alt. approach to himing missiles
     IEnumerator AltPowerupCountdownRoutine()
     {
         Debug.Log("Alt. Routine Started!");
@@ -139,5 +160,37 @@ public class SahilController : MonoBehaviour
         hasPowerup = false;
         currPowerUp = PowerUpType.None;
         powerupIndicator.gameObject.SetActive(false);
+    }
+
+    IEnumerator Smash()
+    {
+        GameObject[] activeEnemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        Debug.Log("Smash routine started!");
+
+        // Store the Player's 'y' position so it we can return to it after the animation
+        floorY = transform.position.y;
+
+        // Calculate the time period we hover as a part of the animation
+        float jumpTime = Time.time + hangTime;
+
+        //Now move the player back down
+        while(Time.time < jumpTime)
+        {
+            sahilRb.velocity = new Vector2(sahilRb.velocity.x, waveSpeed);
+            yield return null;
+        }
+
+        for (int i = 0; i < activeEnemies.Length; i++)
+        {
+            // Apply an explosion force that originates from player position
+            if (activeEnemies[i] != null)
+            {
+                activeEnemies[i].GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, explosionRadius, 10.0f, ForceMode.Impulse);
+            }
+
+            // We are no longer smashing
+            isSmashEnabled = false;
+        }
     }
 }

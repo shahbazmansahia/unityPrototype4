@@ -8,7 +8,7 @@ public class AltMissileController : MonoBehaviour
     private float speed = 15.0f;
     private bool homing;
 
-    private float rocketStrength = 15.0f;
+    private float rocketStrength = 1500.0f;
     private float aliveTimer = 5.0f;
 
     private void Update()
